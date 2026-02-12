@@ -18,50 +18,77 @@ exp3.l
 
 ```
 %{
-    #include "y.tab.h"
+#include "y.tab.h"
 %}
 
 %%
-[a-zA-Z]+  { yylval = strdup(yytext); return NAME; }
-[ \t\n]    { /* Ignore whitespace */ }
-.          { printf("Invalid character: %s\n", yytext); }
+
+"=" {printf("\n Operator is EQUAL");} 
+"+" {printf("\n Operator is PLUS");}
+"-" {printf("\n Operator is MINUS");} 
+"/" {printf("\n Operator is DIVISION");}
+"*" {printf("\n Operator is MULTIPLICATION");} 
+[a-zA-Z]*[0-9]* {
+printf("\n Identifier is %s",yytext); return ID; }
+. return yytext[0];
+\n return 0;
 
 %%
 
-int yywrap() { return 1; }
+int yywrap()
+{
+return 1;
+}
 ```
 
 expt3.y
 
 ```
 %{
-    #include <stdio.h>
-    #include <stdlib.h>
-    extern int yylex();
-    void yyerror(const char *s);
+#include<stdio.h>
 %}
 
-%token NAME
+%token A ID
 
 %%
-start: NAME { printf("Hello, %s!\n", $1); }
-     ;
-%%
-void yyerror(const char *s) {
-    fprintf(stderr, "Error: %s\n", s);
+
+statement: A'='E
+
+| E {
+
+printf("\n Valid arithmetic expression");
+
+$$=$1;
+
 }
 
-int main() {
-    printf("Enter your name: ");
-    yyparse();
-    return 0;
+;
+
+E: E'+'ID
+
+| E'-'ID
+
+| E'*'ID
+
+| E'/'ID
+
+| ID
+
+;
+
+%%
+
+extern FILE*yyin; main() {
+do { yyparse();
+}while(!feof(yyin)); } yyerror(char*s)
+{
+
 }
 ```
 
 # OUTPUT
 
-<img width="731" height="250" alt="Screenshot 2026-02-12 105138" src="https://github.com/user-attachments/assets/eecd4704-af1e-4d89-bc59-49502f4fd6b0" />
-
+<img width="889" height="615" alt="Screenshot 2026-02-12 112805" src="https://github.com/user-attachments/assets/8bbc7325-6f45-4032-b61f-f07f43579c2d" />
 
 # RESULT
 A YACC program to recognize a valid arithmetic expression that uses operator +,-,* and / is executed successfully and the output is verified.
